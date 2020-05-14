@@ -1,0 +1,7 @@
+Admins:
+Ahmed Osman#Password
+Jack Smith#123
+Staff:
+James#derp
+Mike#lol
+Henry#lol
