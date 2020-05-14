@@ -121,20 +121,19 @@ vector<Book> LoadsBooks_BookVector(vector<vector<string>> &BookVector)
     vector<Book> BooksfromFile(1);
     if (BookVector.empty()) return BooksfromFile;
     BooksfromFile.resize(BookVector.size());
-    int j = 0;
     for (unsigned int i = 0; i < BookVector.size(); i++) // Loop through a string 2D Vector and set all the Books within the booksfromFile vector
     {
-        BooksfromFile[i].setId(atoi(BookVector[i][j].c_str())); // first convert the id from string to int, then set the id
-        BooksfromFile[i].setCategory(BookVector[i][j + 1]);// set the category of the book
-        BooksfromFile[i].setName(BookVector[i][j + 2]); // set the name of the book
-        BooksfromFile[i].setDescription(BookVector[i][j + 3]);// set the description HAS SPEECH MARKS
-        BooksfromFile[i].setPublisher(BookVector[i][j + 4]); // set publisher
-        BooksfromFile[i].setReleaseDate(BookVector[i][j + 5]); // set release date
-        BooksfromFile[i].setAuthor(BookVector[i][j + 6]); // set authour
-        BooksfromFile[i].setPrice((float)atof(BookVector[i][j + 7].c_str())); // set Price
-        BooksfromFile[i].setQuantity(atoi(BookVector[i][j + 8].c_str())); // set quantity
-        BooksfromFile[i].setRating((float)atof(BookVector[i][j + 9].c_str())); // sets the rating
-        BooksfromFile[i].setReview(BookVector[i][j + 10]); // set a review HAS SPEECH MARKS
+        BooksfromFile[i].setId(atoi(BookVector[i][0].c_str())); // first convert the id from string to int, then set the id
+        BooksfromFile[i].setCategory(BookVector[i][1]);// set the category of the book
+        BooksfromFile[i].setName(BookVector[i][2]); // set the name of the book
+        BooksfromFile[i].setDescription(BookVector[i][3]);// set the description HAS SPEECH MARKS
+        BooksfromFile[i].setPublisher(BookVector[i][4]); // set publisher
+        BooksfromFile[i].setReleaseDate(BookVector[i][5]); // set release date
+        BooksfromFile[i].setAuthor(BookVector[i][6]); // set authour
+        BooksfromFile[i].setPrice((float)atof(BookVector[i][7].c_str())); // set Price
+        BooksfromFile[i].setQuantity(atoi(BookVector[i][8].c_str())); // set quantity
+        BooksfromFile[i].setRating((float)atof(BookVector[i][9].c_str())); // sets the rating
+        BooksfromFile[i].setReview(BookVector[i][10]); // set a review HAS SPEECH MARKS
         //BooksfromFile[i].BTEC_print(); // Once everything had been set Print out the Books Info
     }
     return BooksfromFile;
@@ -499,7 +498,7 @@ void SearchBookInterface()
             {
                 cout << "Invalid ID number entered, Try again: ";
             }
-            for (size_t i = 0; i < bookVector2D.size(); i++)
+            for (unsigned int i = 0; i < bookVector2D.size(); i++)
             {
                 if (bookVector2D[i].getId() == ID)
                 {
@@ -519,7 +518,7 @@ void SearchBookInterface()
             cout << "Enter Category: ";
             getline(cin, category);
             // Function checks valid categories
-            for (size_t i = 0; i < bookVector2D.size(); i++)
+            for (unsigned int i = 0; i < bookVector2D.size(); i++)
             {
                 if (bookVector2D[i].getCategory().find(category) != string::npos)
                 {
@@ -539,7 +538,7 @@ void SearchBookInterface()
             cout << "Enter Name: ";
             getline(cin, Name);
             // do find instead here
-            for (size_t i = 0; i < bookVector2D.size(); i++)
+            for (unsigned int i = 0; i < bookVector2D.size(); i++)
             {
                 if (bookVector2D[i].getName().find(Name) != string::npos)
                 {
@@ -558,7 +557,7 @@ void SearchBookInterface()
             string Author;
             cout << "Enter Author's Name: ";
             getline(cin, Author);
-            for (size_t i = 0; i < bookVector2D.size(); i++)
+            for (unsigned int i = 0; i < bookVector2D.size(); i++)
             {
                 //cout << bookVector2D[i].getAuthor() << endl;
                 if (bookVector2D[i].getAuthor().find(Author) != string::npos)
@@ -673,7 +672,7 @@ void DeleteBooksInterface()
     }
     BookFile.open("Books.txt");
     temp.open("temp.txt");
-    for (size_t i = 0; i < Books.size(); i++)
+    for (unsigned int i = 0; i < Books.size(); i++)
     {
         if (Books[i].getId() == input_ID)
         {
