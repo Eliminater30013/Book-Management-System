@@ -1,7 +1,7 @@
 Admins:
-Ahmed Osman#Password
+Will Smith#Password
 Jack Smith#123
 Staff:
-James#derp
-Mike#lol
-Henry#lol
+James#derp2
+Dave#123
+Xar2#ttyl

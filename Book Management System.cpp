@@ -12,11 +12,11 @@
 #include "Book.h"
 #include "BookList.h"
 
+/*Function Declarations*/
 using namespace std;
 istream& getline(std::istream& ins, int& n);
 int StartupMessage();//ENSURE ERROR CHECKING PLS
 void DisplayBooksInterface();
-vector<vector<string>> LoadBooks();
 void Printout_BookVector(vector<Book> &BookVector);
 void Print2DVector(vector<vector<string>>& Vector2D);
 int CheckUsername(string username, string password, char option); // 0 success, 1 failure, -1 wrong password
@@ -27,10 +27,17 @@ void AddBooksInterface();
 void DeleteBooksInterface();
 void UpdateBooksInterface();
 void AppendtoBookFile(Book& aBook);
+
 int DeleteStaff(string staff);
+int ResetPassword(string staff, string newPassword);
+int AddStaff(string staff, string password);
+void ShowStaffDetails();
+vector<vector<string>> LoadBooks();
 vector<Book> LoadsBooks_BookVector(vector<vector<string>>& BookVector);
 vector<Book> LoadBooksQuickly();
 int MAXQUANTITY_SETBY_ADMIN = 100;
+
+/*Main*/
 int main()
 {
     vector<vector<string>> StoredBooks = LoadBooks();
@@ -73,6 +80,109 @@ int main()
         "01/12/2003", "James Patterson", 2.99, 20, 4.5, " I loved this book, it was sso interesting to see how Weebs live and go about their day to day life");
     one.BTEC_print();*/
 }
+
+int StartupMessage()
+{
+    char option = ' ';
+    string adminUsername, adminPassword, staffUsername, staffPassword;
+    // check if the user is an Admin, Guest, Staff
+    cout << "Please enter your Administration level by entering the number relating to you positions:\n";
+    cout << "1. Admin\n2. Staff\n3. Guest\nChoice: ";
+    option = _getch(); // use getch() if this doesn't work ie in Codeblocks
+    cout << option;
+    while (option != '1' && option != '2' && option != '3')
+    {
+        cout << "\nYou can only choose the numbers 1, 2 or 3, Please try again\nChoice: ";
+        option = _getch(); // use getch() if this doesn't work ie in Codeblocks
+        cout << option;
+    }
+    if (option == '1' || option == '2') // if Admin or Staff
+    {
+        cout << "\nEnter your username\nUsername: ";
+        getline(cin, adminUsername); // get the Admins username whilst ignoring option 
+        cout << "Enter your password\nPassword: ";
+        getline(cin, adminPassword);
+        int result = CheckUsername(adminUsername, adminPassword, option); // returns a integer which shows the result to check if username,password combination exists.
+        while (result == -1 || result == -2 || result == -3 || result == -4) // let the user try to renter their password
+        {
+            if (result == -1 || result == -2)
+            {
+                cout << "Wrong username entered, Please enter your username again," <<
+                    "or enter 'REDO' to go back to the start menu \nUsername: ";
+                getline(cin, adminUsername);
+                if (adminUsername == "REDO") // since we redid it option has a chance of being threee so we need to account for it
+                {
+                    cout << "Please enter your Administration level by entering the number relating to you positions:\n";
+                    cout << "1. Admin\n2. Staff\n3. Guest\nChoice: ";
+                    option = _getch(); // use getch() if this doesn't work ie in Codeblocks
+                    cout << option;
+                    while (option != '1' && option != '2' && option != '3')
+                    {
+                        cout << "\nYou can only choose the numbers 1, 2 or 3, Please try again\nChoice: ";
+                        option = _getch(); // use getch() if this doesn't work ie in Codeblocks
+                        cout << option;
+                    }
+                    if (option == '3')
+                    {
+                        return 0; // option 3 guestScreen
+                    }
+                    cout << "\nEnter your username\nUsername: ";
+                    getline(cin, adminUsername); // get the Admins username whilst ignoring option 
+                    cout << "Enter your password\nPassword: ";
+                    getline(cin, adminPassword);
+                }
+                else // just enter the password
+                {
+                    cout << "Enter your password\nPassword: ";
+                    getline(cin, adminPassword);
+                }
+                result = CheckUsername(adminUsername, adminPassword, option);
+            }
+            else if (result == -3 || result == -4)
+            {
+                cout << "Wrong password entered, Please enter your password again or type 'BACK' to re-enter username," <<
+                    "or enter 'REDO' to go back to the start menu \nPassword: ";
+                getline(cin, adminPassword);
+                if (adminPassword == "REDO") // since we redid it option has a chance of being threee so we need to account for it
+                {
+                    cout << "Please enter your Administration level by entering the number relating to you positions:\n";
+                    cout << "1. Admin\n2. Staff\n3. Guest\nChoice: ";
+                    option = _getch(); // use getch() if this doesn't work ie in Codeblocks
+                    cout << option;
+                }
+                while (option != '1' && option != '2' && option != '3')
+                {
+                    cout << "\nYou can only choose the numbers 1, 2 or 3, Please try again\nChoice: ";
+                    option = _getch(); // use getch() if this doesn't work ie in Codeblocks
+                    cout << option;
+                }
+                if (option == '3')
+                {
+                    return 0; // option 3 guestScreen
+                }
+                if (adminPassword == "BACK" || adminPassword == "REDO")
+                {
+                    cout << "Enter your username\nUsername: ";
+                    getline(cin, adminUsername); // get the Admins username whilst ignoring option 
+                    cout << "Enter your password\nPassword: ";
+                    getline(cin, adminPassword);
+                }
+                result = CheckUsername(adminUsername, adminPassword, option);
+            }
+        }
+        return result; // will only return 0, 1 , 2 for sucess
+    }
+    else if (option == '3')
+    {
+        return 0;
+    }
+    else
+    {
+        cout << "Option was neither 1, 2,3" << endl;
+        return 100; // unknown error
+    }
+}
+
 vector<vector<string>> LoadBooks()
 {
     /*  Read in a text file that has Books 
@@ -139,101 +249,14 @@ vector<Book> LoadsBooks_BookVector(vector<vector<string>> &BookVector)
     return BooksfromFile;
 }
 
-int StartupMessage()
+vector<Book> LoadBooksQuickly()
 {
-    char option = ' ';
-    string adminUsername,adminPassword, staffUsername, staffPassword;
-    // check if the user is an Admin, Guest, Staff
-    cout << "Please enter your Administration level by entering the number relating to you positions:\n";
-    cout << "1. Admin\n2. Staff\n3. Guest\nChoice: ";
-    option = _getch(); // use getch() if this doesn't work ie in Codeblocks
-    while (option != '1' && option != '2' && option != '3')
-    {
-        cout << "\nYou can only choose the numbers 1, 2 or 3, Please try again\nChoice: ";
-        option = _getch(); // use getch() if this doesn't work ie in Codeblocks
-    }
-    if (option == '1' || option == '2') // if Admin or Staff
-    {
-        cout << "\nEnter your username\nUsername: ";
-        getline(cin, adminUsername); // get the Admins username whilst ignoring option 
-        cout << "Enter your password\nPassword: ";
-        getline(cin, adminPassword);
-        int result = CheckUsername(adminUsername, adminPassword, option); // returns a integer which shows the result to check if username,password combination exists.
-        while (result == -1 || result == -2 || result == -3 || result == -4) // let the user try to renter their password
-        {
-            if (result == -1 || result == -2)
-            {
-                cout << "Wrong username entered, Please enter your username again," <<
-                    "or enter 'REDO' to go back to the start menu \nUsername: ";
-                getline(cin, adminUsername);
-                if (adminUsername == "REDO") // since we redid it option has a chance of being threee so we need to account for it
-                {
-                    cout << "Please enter your Administration level by entering the number relating to you positions:\n";
-                    cout << "1. Admin\n2. Staff\n3. Guest\nChoice: ";
-                    option = _getch(); // use getch() if this doesn't work ie in Codeblocks
-                    while (option != '1' && option != '2' && option != '3')
-                    {
-                        cout << "\nYou can only choose the numbers 1, 2 or 3, Please try again\nChoice: ";
-                        option = _getch(); // use getch() if this doesn't work ie in Codeblocks
-                    }
-                    if (option == '3')
-                    {
-                        return 0; // option 3 guestScreen
-                    }
-                    cout << "\nEnter your username\nUsername: ";
-                    getline(cin, adminUsername); // get the Admins username whilst ignoring option 
-                    cout << "Enter your password\nPassword: ";
-                    getline(cin, adminPassword);
-                }
-                else // just enter the password
-                {
-                    cout << "Enter your password\nPassword: ";
-                    getline(cin, adminPassword);
-                }
-                result = CheckUsername(adminUsername, adminPassword, option);
-            }
-            else if (result == -3 || result == -4)
-            {
-                cout << "Wrong password entered, Please enter your password again or type 'BACK' to re-enter username," <<
-                    "or enter 'REDO' to go back to the start menu \nPassword: ";
-                getline(cin, adminPassword);
-                if (adminPassword == "REDO") // since we redid it option has a chance of being threee so we need to account for it
-                {
-                    cout << "Please enter your Administration level by entering the number relating to you positions:\n";
-                    cout << "1. Admin\n2. Staff\n3. Guest\nChoice: ";
-                    option = _getch(); // use getch() if this doesn't work ie in Codeblocks
-                }
-                while (option != '1' && option != '2' && option != '3')
-                {
-                    cout << "\nYou can only choose the numbers 1, 2 or 3, Please try again\nChoice: ";
-                    option = _getch(); // use getch() if this doesn't work ie in Codeblocks
-                }
-                if (option == '3')
-                {
-                    return 0; // option 3 guestScreen
-                }
-                if (adminPassword == "BACK" || adminPassword == "REDO")
-                {
-                    cout << "Enter your username\nUsername: ";
-                    getline(cin, adminUsername); // get the Admins username whilst ignoring option 
-                    cout << "Enter your password\nPassword: ";
-                    getline(cin, adminPassword);
-                }
-                result = CheckUsername(adminUsername, adminPassword, option);
-            }
-        }
-        return result; // will only return 0, 1 , 2 for sucess
-    }
-    else if (option == '3')
-    {
-        return 0;
-    }
-    else
-    {
-        cout << "Option was neither 1, 2,3" << endl;
-        return 100; // unknown error
-    }
+    vector<vector<string>> books2d = LoadBooks();
+    vector<Book> books = LoadsBooks_BookVector(books2d);
+    //cout << books[0].getNumberOfBooks() << endl;
+    return books;
 }
+
 
 int CheckUsername(string username, string password, char option)
 {
@@ -313,11 +336,14 @@ void AdminInterface()// can add to staff list as well as delete staff
 {
     cout << "What would you like to do?\n1. Manage Staff Logins\n2. Manage Book Collection\n3. Check Budget & set Quantity\n4. Login Report\n";
     char option = _getch();
+    cout << option << '\n';
     if (option == '1')
     {
         cout << "\n1. Delete Staff\n2. Reset Password\n3. Add Staff\n4. Check Staff details\n";
         char secondOption = _getch();
-        string staff;
+        char thirdOption = 'N';
+        cout << secondOption << '\n';
+        string staff, password, newPassword, confirmPassword;;
         switch (secondOption)
         {
         case '1':
@@ -326,13 +352,56 @@ void AdminInterface()// can add to staff list as well as delete staff
             DeleteStaff(staff); // 0 sucess -1 failure
             break;
         case '2':
-            //ResetPassword(string staff) // see above
+            cout << "Please Enter the name of record you want to change the Password of: ";
+            getline(cin, staff);
+            cout << "\nEnter the old Password: ";
+            getline(cin, password);
+            // check if user with password exists;
+            cout << "\nEnter the new Password: ";
+            getline(cin, newPassword);
+            cout << "\nConfirm Password: ";
+            getline(cin, confirmPassword);
+            while (newPassword != confirmPassword)
+            {
+                cout << "Error, Passwords do not match! Please Re-enter the Password\n";
+                cout << "Enter the new Password: ";
+                getline(cin, newPassword);
+                cout << "\nConfirm Password: ";
+                getline(cin, confirmPassword);
+            }
+            ResetPassword(staff, newPassword); // see above
             break;
         case '3':
-            //AddPassword(string staff) // see above
+            while (thirdOption == 'N' || thirdOption == 'n')
+            {
+                cout << "Please Enter the Name of the Staff: ";
+                getline(cin, staff);
+                cout << "\nEnter the Password: ";
+                getline(cin, password);
+                cout << "\nConfirm Password: ";
+                getline(cin, confirmPassword);
+                while (newPassword != confirmPassword)
+                {
+                    cout << "Error, Passwords do not match! Please Re-enter the Password\n";
+                    cout << "Enter the new Password: ";
+                    getline(cin, newPassword);
+                    cout << "\nConfirm Password: ";
+                    getline(cin, confirmPassword);
+                }
+                cout << "Before adding the Staff would you like to change the staff name?\nCurrent Username: " << staff << "\n"
+                    << "Press Y for confirmation and N to redo the Process!\n";
+                thirdOption = _getch();
+                while ((thirdOption != 'N' && thirdOption != 'n') && (thirdOption != 'Y' && thirdOption != 'y'))
+                {
+                    cout << "\nWrong letter entered, Try Again\nChoice: ";
+                    thirdOption = _getch(); // use getch() if this doesn't work ie in Codeblocks
+                    cout << thirdOption;
+                }
+            }
+            AddStaff(staff, password); // see above
             break;
         case '4':
-            //ShowStaffDetails()// see above
+            ShowStaffDetails();// see above
             break;
         default:
         {
@@ -340,6 +409,7 @@ void AdminInterface()// can add to staff list as well as delete staff
         }
         }
     }
+    //Completed ;}{
     else if (option == '2')
     {
         //BookOptions
@@ -357,6 +427,129 @@ void AdminInterface()// can add to staff list as well as delete staff
         cout << "Admin Interface error!\n";
     }
 }
+
+int DeleteStaff(string staff)
+{
+    string line;
+    ifstream StaffFile;
+    ofstream temp;
+    bool start = true, found = false;
+    StaffFile.open("Existing Users.txt");
+    temp.open("temp.txt");
+    while (getline(StaffFile, line)) // read line by line
+    {
+        if (start)
+        {
+            temp << line;
+            start = false;
+        }
+        else if (line.substr(0, staff.size()) != staff) // Carry all the entrees except the staff that we want to delete to another file
+            temp << "\n" << line;
+        else
+        {
+            cout << "Found! The record with the name " << staff << " has been deleted" << endl;
+            found = true;
+        }
+    }
+    StaffFile.close();
+    temp.close();
+    remove("Existing Users.txt");
+    rename("temp.txt", "Existing Users.txt");
+    int returnValue = (found == true) ? 1 : 0;
+    return returnValue;// if succesful
+}
+
+int ResetPassword(string staff, string newPassword)
+{
+    string line;
+    ifstream StaffFile;
+    ofstream temp;
+    StaffFile.open("Existing Users.txt");
+    temp.open("temp.txt");
+    bool start = true, found = false;;
+    while (getline(StaffFile, line)) // read line by line
+    {
+        if (start)
+        {
+            temp << line;
+            start = false;
+        }
+        else if (line.substr(0, staff.size()) != staff) // Carry all the entrees except the staff that we want to delete to another file
+            temp << "\n" << line;
+        else
+        {
+            cout << "Found!" << endl;
+            found = true;
+            temp << "\n" << line.substr(0, staff.size()) << '#' << newPassword;
+        }
+    }
+    cout << "The password with the name " << staff << " has been changed if it existed" << endl;
+    StaffFile.close();
+    temp.close();
+    remove("Existing Users.txt");
+    rename("temp.txt", "Existing Users.txt");
+    int returnValue = (found == true) ? 1 : 0;
+    return returnValue;// if succesful
+}
+
+int AddStaff(string staff, string password)
+{
+    ofstream writeToFile("Existing Users.txt", std::ios_base::app);
+    writeToFile << "\n" << staff << '#' << password;
+    writeToFile.close();
+    return 0;
+}
+
+void ShowStaffDetails()
+{
+    ifstream readFromFile; // create an input stream to allow us to read a file in
+    string txtFromFile = "";
+    int logins = 0;
+    vector<vector<string>> LoginDetails(2); // staff + admins
+    readFromFile.open("Existing Users.txt", std::ios_base::in);
+    /*The following code will return string vector with each even number position being the username and each odd position will contain the password*/
+    if (readFromFile.is_open()) // if the file can be opened
+    {
+        // Read text from file and put it in the spreadsheetformat
+        while (readFromFile.good()) //while the end of the file is not reached
+        {
+            getline(readFromFile, txtFromFile); // read one line in
+            if (txtFromFile == "Admins:") // if the string Admins: is found continue the loop as we want the information below this.
+                continue;// do not include this word in the LoginDetails vector below
+            else if (txtFromFile == "Staff:") // read until the Staff subsection
+                logins = 1; // This will ensure that the information will be in the LoginDetail[1]
+            else
+            {
+                stringstream ss(txtFromFile);// create a string stream 
+                while (getline(ss, txtFromFile, '#'))
+                    LoginDetails[logins].push_back(txtFromFile);
+            }
+        }
+        readFromFile.close();// close the file
+    }
+    else
+    {
+        cout << "File can't be opened!\n";
+    }
+    if (!LoginDetails.empty())
+    {
+        for (size_t i = 0; i < LoginDetails.size(); i++)
+        {
+            string message = (i == 0) ? "Admin Details: \n" : "Staff Details: \n";
+            cout << message;
+            for (size_t j = 0; j < LoginDetails[i].size(); j += 2)
+            {
+                if (!i)
+                    cout << "Username: " << LoginDetails[i][j] << "\t\t\tPassword: " << LoginDetails[i][j + 1] << endl;
+                else
+                    cout << "Username: " << LoginDetails[i][j] << "\t\t\t\tPassword: " << LoginDetails[i][j + 1] << endl;
+            }
+        }
+    }
+    else
+        cout << "File is empty!\n";
+}
+
 void StaffInterface()
 {
     char option = ' ';
@@ -365,6 +558,7 @@ void StaffInterface()
         cout << "\nWhat would you like to do?\n1. Add a Book\n2. Display Books\n3. Search Books\n4. Delete a Book\n5. Update Books\n"
             << "6. Help!\n7. Return to Main Menu\n";
         option = _getch();
+        cout << option;
         if (option == '1')
         {
             AddBooksInterface();
@@ -398,26 +592,6 @@ void StaffInterface()
             cout << "Invalid Key pressed, Please try again\n" << endl;
         }
     }
-}
-
-int DeleteStaff(string staff)
-{
-    string line;
-    ifstream StaffFile;
-    ofstream temp;
-    StaffFile.open("Existing Users.txt");
-    temp.open("temp.txt");
-    while (getline(StaffFile, line)) // read line by line
-    {
-        if (line.substr(0,staff.size()) != staff) // Carry all the entrees excep the staff that we want to delete to another file
-            temp << line << endl;
-    }
-    cout << "The record with the name " << staff << " has been deleted if it existed" << endl;
-    StaffFile.close();
-    temp.close();
-    remove("Existing Users.txt");
-    rename("temp.txt", "Existing Users.txt");
-    return 0;// if succesful
 }
 
 void Print2DVector(vector<vector<string>>& Vector2D)
@@ -486,6 +660,7 @@ void SearchBookInterface()
 {
     cout << "Search a book by:\n1. ID \n2. Category\n3. Name\n4. Author\n";
     char option = _getch();
+    cout << option;
     vector<Book> bookVector2D = LoadBooksQuickly();
     vector<int> position;
     while (option == '1' || option == '2' || option == '3' || option == '4')
@@ -576,6 +751,7 @@ void SearchBookInterface()
         {
             cout << "Invalid Option, Try again! ";
             option = _getch();
+            cout << option;
         }
     }
     
@@ -694,10 +870,12 @@ void DeleteBooksInterface()
     }
     cout << "Would you like to delete this Book? Press 'Y' for Yes and 'N' for No";
     char choice = _getch();
+    cout << choice;
     while (choice != 'Y' && choice != 'N' && choice != 'n' && choice != 'y')
     {
         cout << "Wrong Key pressed, Try again!\n";
         choice = _getch();
+        cout << choice;
     }
     if (choice == 'n' || choice == 'N')
         return;
@@ -737,6 +915,7 @@ void UpdateBooksInterface()
         << "\n5. Publisher\n6. ReleaseDate, \n7. Author"
         << "\n8. Price\n9. Review";
     char option = _getch();
+    cout << option;
     while (option != '1' && option != '2' && option != '3' && option != '4' && option != '5' && option != '6' && option != '7' && option != '8' && option != '9')
     {
         cout << "\nWrong Option entered Try again: ";
@@ -752,10 +931,12 @@ void UpdateBooksInterface()
     Books[input_ID].BTEC_print();
     cout << "Would you like to Update this Book? Press 'Y' for Yes and 'N' for No";
     char choice = _getch();
+    cout << choice;
     while (choice != 'Y' && choice != 'N' && choice != 'n' && choice != 'y')
     {
         cout << "Wrong Key pressed, Try again!\n";
         choice = _getch();
+        cout << choice;
     }
     if (choice == 'n' || choice == 'N')
     return;
@@ -837,11 +1018,4 @@ void UpdateBooksInterface()
     }
     ofstream writeToFile("Books.txt", std::ios_base::out);
     RewriteBookFile(Books);
-}
-vector<Book> LoadBooksQuickly() 
-{
-    vector<vector<string>> books2d = LoadBooks();
-    vector<Book> books = LoadsBooks_BookVector(books2d);
-    //cout << books[0].getNumberOfBooks() << endl;
-    return books;
 }
