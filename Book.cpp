@@ -4,6 +4,7 @@
 #include <string>
 #include<fstream>
 #include <sstream>
+#include <iomanip>
 #include "Book.h"
 
 using namespace std;
@@ -237,4 +238,110 @@ void Book::SetAll(int id, string category, string name, string description, stri
 	this->quantity = quantity;
 	this->rating = rating;
 	this->review = review;
+}
+vector<vector<string>> LoadBooks()
+{
+	/*  Read in a text file that has Books
+		If the text file exists append books to it else make a new file, the file name will be Books*/
+	ifstream readFromFile("Books.txt", std::ios_base::in);
+	vector<vector<string>> error{ {"Books.txt file was not found"} };
+	vector<vector<string>> BookVector;// will contain the book and its information, e.g. BookVector[Book number from 0][Book class members]
+	bool success = false;
+	if (readFromFile.is_open())
+	{
+		vector<string> BookString;//books will be read in, one book (line) at a time
+		string FullBookString;
+		while (readFromFile.good()) // keep reading if the state of the stream is OK. And Read text from file
+		{
+			while (getline(readFromFile, FullBookString)) // Read a Book and keep reading each line
+			{
+				stringstream BookStream; // create a string stream to better read the Book
+				BookStream << FullBookString;
+				while (BookStream >> std::ws) // trim any white space characters before each string element and keep reading the stringstream until the end
+				{
+					string csvElement;
+					if (BookStream.peek() == '"') // if the next character has a speech mark(look for first speech mark), we know that we are dealing with a string
+					{
+						BookStream >> quoted(csvElement); // Input the string between the two quotation marks and unquote the speech marks.
+						string discard; // discard the comma string
+						getline(BookStream, discard, ',');// since all thats left in the stringstream is ',' followed the whats left of the stringstream, we know that
+					}                               // we have to get rid of the delimiter (the comma) and move onto the next element
+					else
+					{
+						getline(BookStream, csvElement, ',');// else read the the stringstream as csv
+					}
+					BookString.push_back(csvElement);// Put the appropriate informatio in to the Vector for storage
+				}
+				BookVector.push_back(BookString); // Save the Book
+				BookString.clear(); // Clear the vector to be used again.
+			}
+			success = true;
+		}
+		readFromFile.close();
+	}
+	return { success == true ? BookVector : error };
+}
+
+vector<Book> LoadsBooks_BookVector(vector<vector<string>>& BookVector)
+{
+	vector<Book> BooksfromFile(1);
+	if (BookVector.empty()) return BooksfromFile;
+	BooksfromFile.resize(BookVector.size());
+	for (unsigned int i = 0; i < BookVector.size(); i++) // Loop through a string 2D Vector and set all the Books within the booksfromFile vector
+	{
+		BooksfromFile[i].setId(atoi(BookVector[i][0].c_str())); // first convert the id from string to int, then set the id
+		BooksfromFile[i].setCategory(BookVector[i][1]);// set the category of the book
+		BooksfromFile[i].setName(BookVector[i][2]); // set the name of the book
+		BooksfromFile[i].setDescription(BookVector[i][3]);// set the description HAS SPEECH MARKS
+		BooksfromFile[i].setPublisher(BookVector[i][4]); // set publisher
+		BooksfromFile[i].setReleaseDate(BookVector[i][5]); // set release date
+		BooksfromFile[i].setAuthor(BookVector[i][6]); // set authour
+		BooksfromFile[i].setPrice((float)atof(BookVector[i][7].c_str())); // set Price
+		BooksfromFile[i].setQuantity(atoi(BookVector[i][8].c_str())); // set quantity
+		BooksfromFile[i].setRating((float)atof(BookVector[i][9].c_str())); // sets the rating
+		BooksfromFile[i].setReview(BookVector[i][10]); // set a review HAS SPEECH MARKS
+		//BooksfromFile[i].BTEC_print(); // Once everything had been set Print out the Books Info
+	}
+	return BooksfromFile;
+}
+
+vector<Book> LoadBooksQuickly()
+{
+	vector<vector<string>> books2d = LoadBooks();
+	vector<Book> books = LoadsBooks_BookVector(books2d);
+	//cout << books[0].getNumberOfBooks() << endl;
+	return books;
+}
+void AppendtoBookFile(Book& aBook)
+{
+	ofstream writeToFile("Books.txt", std::ios_base::app);
+	writeToFile << "\n" << aBook;
+}
+void RewriteBookFile(vector<Book>& Books)
+{
+	ofstream writeToFile("Books.txt", std::ios_base::out);
+	for (size_t i = 0; i < Books.size(); i++)
+	{
+		if (i == Books.size() - 1)
+			writeToFile << Books[i];
+		else
+			writeToFile << Books[i] << "\n";
+	}
+}
+void Printout_BookVector(vector<Book>& BookVector)
+{
+	for (unsigned int i = 0; i < BookVector.size(); i++)
+	{
+		cout << "Book " << i + 1 << " in Catalogue\n";
+		BookVector[i].BTEC_print();
+	}
+}
+void Print2DVector(vector<vector<string>>& Vector2D)
+{
+	for (unsigned int i = 0; i < 3; i++) // Size is 11.
+	{
+		cout << "Vector " << i << " in Catalog\n";
+		for (unsigned int j = 0; j < Vector2D[i].size(); j++)
+			cout << Vector2D[i][j] << "\n";
+	}
 }

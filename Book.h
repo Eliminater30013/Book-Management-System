@@ -64,3 +64,11 @@ public:
 	void SetAll(int id, string category, string name, string description, string publisher, string releaseDate, string author, float price, int quantity, float rating, string review);
 
 };
+vector<vector<string>> LoadBooks();
+vector<Book> LoadsBooks_BookVector(vector<vector<string>>& BookVector);
+vector<Book> LoadBooksQuickly();
+
+void AppendtoBookFile(Book& aBook);
+void Printout_BookVector(vector<Book>& BookVector);
+void Print2DVector(vector<vector<string>>& Vector2D);
+void RewriteBookFile(vector<Book>& Books);
