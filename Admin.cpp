@@ -8,111 +8,134 @@
 #include <conio.h>
 #include "Book.h"
 #include "Admin.h"
+#include "Staff.h"
 /*Function Declarations*/
 using namespace std;
 
 /*ADMIN INTERFACE WITH 4 FUNCTIONS, DELETESTAFF, RESET PASSWORD, ADD STAFF AND SHOW STAFF DETAILS*/
-/*                                                                                               */
+/*      ADMIN PART 1 HAS BEEN COMPLETED 04/08/2O                                                                                         */
 void AdminInterface()// can add to staff list as well as delete staff
 {
-    cout << "What would you like to do?\n1. Manage Staff Logins\n2. Manage Book Collection\n3. Check Budget & set Quantity\n4. Login Report\n";
-    char option = _getch();
-    cout << option << '\n';
-    if (option == '1')
-    {
-        cout << "\n1. Delete Staff\n2. Reset Password\n3. Add Staff\n4. Check Staff details\n";
-        char secondOption = _getch();
-        char thirdOption = 'N';
-        cout << secondOption << '\n';
-        string staff, password, newPassword, confirmPassword;;
-        switch (secondOption)
+    char option = ' ';
+    do {
+        cout << "What would you like to do?\n1. Manage Staff Logins\n2. Manage Book Collection\n3. Check Budget & set Quantity\n4. Login Report\n5. Return\nChoice: ";
+        option = _getch();
+        cout << option << '\n';
+        if (option == '1')
         {
-        case '1':
-            cout << "Please Enter the name of record you want to delete: ";
-            getline(cin, staff);
-            DeleteStaff(staff); // 0 sucess -1 failure
-            break;
-        case '2':
-            cout << "Please Enter the name of record you want to change the Password of: ";
-            getline(cin, staff);
-            cout << "\nEnter the old Password: ";
-            getline(cin, password);
-            // check if user with password exists;
-            cout << "\nEnter the new Password: ";
-            getline(cin, newPassword);
-            cout << "\nConfirm Password: ";
-            getline(cin, confirmPassword);
-            while (newPassword != confirmPassword)
-            {
-                cout << "Error, Passwords do not match! Please Re-enter the Password\n";
-                cout << "Enter the new Password: ";
-                getline(cin, newPassword);
-                cout << "\nConfirm Password: ";
-                getline(cin, confirmPassword);
-            }
-            ResetPassword(staff, newPassword); // see above
-            break;
-        case '3':
-            while (thirdOption == 'N' || thirdOption == 'n')
-            {
-                cout << "Please Enter the Name of the Staff: ";
-                getline(cin, staff);
-                cout << "\nEnter the Password: ";
-                getline(cin, password);
-                cout << "\nConfirm Password: ";
-                getline(cin, confirmPassword);
-                while (newPassword != confirmPassword)
+            char secondOption = ' ';
+            do {
+                cout << "\n1. Delete Staff\n2. Reset Password\n3. Add Staff\n4. Check Staff details\n5. Return\nChoice: ";
+                secondOption = _getch();
+                char thirdOption = 'N';
+                cout << secondOption << '\n';
+                string staff, password, newPassword, confirmPassword;;
+                switch (secondOption)
                 {
-                    cout << "Error, Passwords do not match! Please Re-enter the Password\n";
-                    cout << "Enter the new Password: ";
+                case '1':
+                    cout << "Please Enter the name of record you want to delete: ";
+                    getline(cin, staff);
+                    DeleteStaff(staff); // 0 sucess -1 failure
+                    break;
+                case '2':// error checking complete
+                    int result;
+                    do {
+                        cout << "Please Enter the name of record you want to change the Password of: ";
+                        getline(cin, staff);
+                        cout << "\nEnter the old Password: ";
+                        getline(cin, password);
+                        result = CheckUsername(staff, password, 2);
+                        if (result == -2)
+                            cout << "Wrong username and Password!\n";
+                        else if (result == -4)
+                            cout << "Wrong Password, Try again!\n";
+                        else
+                            cout << "User Exists!\n";
+                    } while (result < 0); // check user exists
+                    cout << "\nEnter the new Password: ";
                     getline(cin, newPassword);
                     cout << "\nConfirm Password: ";
                     getline(cin, confirmPassword);
-                }
-                cout << "Before adding the Staff would you like to change the staff name?\nCurrent Username: " << staff << "\n"
-                    << "Press Y for confirmation and N to redo the Process!\n";
-                thirdOption = _getch();
-                while ((thirdOption != 'N' && thirdOption != 'n') && (thirdOption != 'Y' && thirdOption != 'y'))
+                    while (newPassword != confirmPassword) // confirm error
+                    {
+                        cout << "Error, Passwords do not match! Please Re-enter the Password\n";
+                        cout << "Enter the new Password: ";
+                        getline(cin, newPassword);
+                        cout << "\nConfirm Password: ";
+                        getline(cin, confirmPassword);
+                    }
+                    ResetPassword(staff, newPassword); // see above
+                    break;
+                case '3':
+                    while (thirdOption == 'N' || thirdOption == 'n')
+                    {
+                        cout << "Please Enter the Name of the Staff: ";
+                        getline(cin, staff);
+                        cout << "Enter the Password: ";
+                        getline(cin, password);
+                        cout << "Confirm Password: ";
+                        getline(cin, confirmPassword);
+                        while (password != confirmPassword)
+                        {
+                            cout << "Error, Passwords do not match! Please Re-enter the Password\n";
+                            cout << "Enter the Password: ";
+                            getline(cin, password);
+                            cout << "Confirm Password: ";
+                            getline(cin, confirmPassword);
+                        }
+                        cout << "Before adding the Staff would you like to change the staff name?\nCurrent Username: " << staff << "\n"
+                            << "Press Y for confirmation and N to redo the Process!\nChoice: ";
+                        thirdOption = _getch();
+                        cout << thirdOption << "\n";
+                        while ((thirdOption != 'N' && thirdOption != 'n') && (thirdOption != 'Y' && thirdOption != 'y'))
+                        {
+                            cout << "\nWrong letter entered, Try Again\nChoice: ";
+                            thirdOption = _getch(); // use getch() if this doesn't work ie in Codeblocks
+                            cout << thirdOption;
+                        }
+                    }
+                    AddStaff(staff, password); // see above
+                    break;
+                case '4':
+                    ShowStaffDetails();// see above
+                    break;
+                case '5': break;
+                default:
                 {
-                    cout << "\nWrong letter entered, Try Again\nChoice: ";
-                    thirdOption = _getch(); // use getch() if this doesn't work ie in Codeblocks
-                    cout << thirdOption;
+                    cout << "Correct option wasn't found\n";
                 }
-            }
-            AddStaff(staff, password); // see above
-            break;
-        case '4':
-            ShowStaffDetails();// see above
-            break;
-        default:
+                }
+            } while (secondOption != '5');
+        }
+        //Completed ;}{
+        else if (option == '2')
         {
-            cout << "Correct option wasn't found\n";
+            //BookOptions
         }
+        else if (option == '3')
+        {
+            //ShowBudget() plus give option to set budget need total cost from everything // can define quantity
         }
-    }
-    //Completed ;}{
-    else if (option == '2')
-    {
-        //BookOptions
-    }
-    else if (option == '3')
-    {
-        //ShowBudget() plus give option to set budget need total cost from everything // can define quantity
-    }
-    else if (option == 4)
-    {
-        //LoginReport(int time) ie since yesterday, since a week etc
-    }
-    else
-    {
-        cout << "Admin Interface error!\n";
-    }
+        else if (option == '4')
+        {
+            //LoginReport(int time) ie since yesterday, since a week etc
+        }
+        else if (option == '5')
+        {
+            cout << "Returned!\n"; return;
+        }
+        else
+        {
+            cout << "Wrong Choice, Please Try Again! \n";
+        }
+    } while (option != '5');
 }
 ////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
 int DeleteStaff(string staff)
 {
-    string line;
+    if (staff == "Staff:" || staff == "Admins:") return 0; // error checking
+    string line, parts;
     ifstream StaffFile;
     ofstream temp;
     bool start = true, found = false;
@@ -120,12 +143,14 @@ int DeleteStaff(string staff)
     temp.open("temp.txt");
     while (getline(StaffFile, line)) // read line by line
     {
-        if (start)
+        stringstream ss(line); // parse line
+        getline(ss, parts, '#');
+        if (start) // ensures the line Admins: doesnt get deleted
         {
             temp << line;
             start = false;
         }
-        else if (line.substr(0, staff.size()) != staff) // Carry all the entrees except the staff that we want to delete to another file
+        else if (parts != staff) // Carry all the entrees except the staff that we want to delete to another file
             temp << "\n" << line;
         else
         {
@@ -133,6 +158,8 @@ int DeleteStaff(string staff)
             found = true;
         }
     }
+    if (!found)
+        cout << "Error: No user exists with the name: " << staff << "\n";
     StaffFile.close();
     temp.close();
     remove("Existing Users.txt");

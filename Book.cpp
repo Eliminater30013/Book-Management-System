@@ -345,3 +345,10 @@ void Print2DVector(vector<vector<string>>& Vector2D)
 			cout << Vector2D[i][j] << "\n";
 	}
 }
+
+/*Book one;
+	one.BTEC_print();
+	one.SetAll(1, "Horror", "Mom's basement", "A story about how a fat man somehow defeated his worst nemesis", "Pelican Foundation",
+		"01/12/2003", "James Patterson", 2.99, 20, 4.5, " I loved this book, it was sso interesting to see how Weebs live and go about their day to day life");
+	one.BTEC_print();
+	*/

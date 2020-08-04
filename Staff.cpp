@@ -19,10 +19,10 @@ void StaffInterface()
     char option = ' ';
     while (option != '7')
     {
-        cout << "\nWhat would you like to do?\n1. Add a Book\n2. Display Books\n3. Search Books\n4. Delete a Book\n5. Update Books\n"
-            << "6. Help!\n7. Return to Main Menu\n";
+        cout << "What would you like to do?\n1. Add a Book\n2. Display Books\n3. Search Books\n4. Delete a Book\n5. Update Books\n"
+            << "6. Help!\n7. Return to Main Menu\nChoice: ";
         option = _getch();
-        cout << option;
+        cout << option << '\n';
         if (option == '1')
         {
             AddBooksInterface();
@@ -53,19 +53,20 @@ void StaffInterface()
         }
         else
         {
-            cout << "Invalid Key pressed, Please try again\n" << endl;
+            cout << "Invalid Key pressed, Please try again!\n";
         }
     }
 }
 void SearchBookInterface()
 {
-    cout << "Search a book by:\n1. ID \n2. Category\n3. Name\n4. Author\n";
-    char option = _getch();
-    cout << option;
     vector<Book> bookVector2D = LoadBooksQuickly();
     vector<int> position;
-    while (option == '1' || option == '2' || option == '3' || option == '4')
+    char option = ' ';
+    while (option != '5')
     {
+        cout << "Search a book by:\n1. ID \n2. Category\n3. Name\n4. Author\n5. Return\nChoice: ";
+        option = _getch();
+        cout << option << "\n";
         if (option == '1')
         {
             int ID;
@@ -148,18 +149,20 @@ void SearchBookInterface()
             }
             break;
         }
-        else
-        {
-            cout << "Invalid Option, Try again! ";
-            option = _getch();
-            cout << option;
+        else if (option == '5') {
+            cout << "Success!\n";
+            break;
+        }
+        else {
+            cout << "Wrong Choice. Try Again\n";
         }
     }
-
-    for (vector<int>::iterator i = position.begin(); i < position.end(); i++) // print out the book content of the position vector
-    { // use of iterators to allow easy movement along the position vector
-        bookVector2D[*i].BTEC_print();
-        cout << endl; // write it out - new line for every book
+    if (!position.empty()) {
+        for (vector<int>::iterator i = position.begin(); i < position.end(); i++) // print out the book content of the position vector
+        { // use of iterators to allow easy movement along the position vector
+            bookVector2D[*i].BTEC_print();
+            cout << endl; // write it out - new line for every book
+        }
     }
 }
 void AddBooksInterface()
@@ -269,12 +272,12 @@ void DeleteBooksInterface()
             cout << endl; // write it out - new line for every book
         }
     }
-    cout << "Would you like to delete this Book? Press 'Y' for Yes and 'N' for No";
+    cout << "Would you like to delete this Book? Press 'Y' for Yes and 'N' for No\nChoice: ";
     char choice = _getch();
     cout << choice;
     while (choice != 'Y' && choice != 'N' && choice != 'n' && choice != 'y')
     {
-        cout << "Wrong Key pressed, Try again!\n";
+        cout << "Wrong Key pressed, Try again!\nChoice: ";
         choice = _getch();
         cout << choice;
     }
@@ -297,6 +300,12 @@ void DeleteBooksInterface()
             foundline = true;
             continue;
         }
+        else if (BookFile.eof())
+        {
+            int new_id = stoi(parts) - 1;
+            line.replace(0, parts.length(), to_string(new_id));
+            temp << line;
+        }
         else
         {
             int new_id = stoi(parts) - 1;
@@ -314,12 +323,14 @@ void UpdateBooksInterface()
 {
     cout << "Update a book by:\n1. Rating \n2. Category\n3. Name\n4. Description"
         << "\n5. Publisher\n6. ReleaseDate, \n7. Author"
-        << "\n8. Price\n9. Review";
+        << "\n8. Price\n9. Review\n0.Return \nChoice: ";
     char option = _getch();
     cout << option;
-    while (option != '1' && option != '2' && option != '3' && option != '4' && option != '5' && option != '6' && option != '7' && option != '8' && option != '9')
+    while (option != '1' && option != '2' && option != '3' && option != '4' && option != '5' && option != '6' && option != '7' && option != '8' && option != '9' && option != '0')
     {
         cout << "\nWrong Option entered Try again: ";
+        option = _getch();
+        cout << option;
     }
     vector<Book> Books = LoadBooksQuickly();
     cout << "Enter ID of Book you would like to update: ";
@@ -330,12 +341,12 @@ void UpdateBooksInterface()
         cout << "Invalid ID, Try again\nID: ";
     }
     Books[input_ID].BTEC_print();
-    cout << "Would you like to Update this Book? Press 'Y' for Yes and 'N' for No";
+    cout << "Would you like to Update this Book? Press 'Y' for Yes and 'N' for No\nChoice: ";
     char choice = _getch();
     cout << choice;
     while (choice != 'Y' && choice != 'N' && choice != 'n' && choice != 'y')
     {
-        cout << "Wrong Key pressed, Try again!\n";
+        cout << "Wrong Key pressed, Try again!\nChoice: ";
         choice = _getch();
         cout << choice;
     }
@@ -413,14 +424,14 @@ void UpdateBooksInterface()
         getline(cin, review);
         Books[input_ID].setReview(review);
     }
+    else if (option == '0') return;
     else {
-        cout << "ERROR 812" << endl;
+        cout << "ERROR 420" << endl;
         return;
     }
     ofstream writeToFile("Books.txt", std::ios_base::out);
     RewriteBookFile(Books);
 }
-
 void DisplayBooksInterface()
 {
     vector<vector<string>> _2DVector = LoadBooks();
@@ -451,3 +462,76 @@ istream& getline(std::istream& ins, int& n)
     return ins;
 }
 
+int CheckUsername(string username, string password, char option)
+{
+    int itExists = 1; // assume the username initially doesn't exist e.g failure
+    ifstream readFromFile; // create an input stream to allow us to read a file in
+    string txtFromFile = "";
+    vector<string> IndidvidualStrings;
+    readFromFile.open("Existing Users.txt", std::ios_base::in);
+    /*The following code will return string vector with each even number position being the username and each odd position will contain the password*/
+    if (readFromFile.is_open() && (option == '1' || option == 1)) // if the file can be opened
+    {
+        // Read text from file
+        while (readFromFile.good()) //while the end of the file is not reached
+        {
+            getline(readFromFile, txtFromFile); // read one line in
+            if (txtFromFile == "Staff:") // read until the Staff subsection
+                break;
+            if (txtFromFile == "Admins:") // if the string Admins: is found continue the loop as we want the information below this.
+                continue;// do not include this word in the IndidvidualStrings vector below
+            stringstream ss(txtFromFile);// create a string stream 
+            while (getline(ss, txtFromFile, '#'))
+                IndidvidualStrings.push_back(txtFromFile);
+        }
+    }
+    else if (readFromFile.is_open() && (option == '2' || option == 2) ) // if the file can be opened
+    {
+        bool isitStaff = false;
+        // Read text from file
+        while (readFromFile.good()) //while the end of the file is not reached
+        {
+            getline(readFromFile, txtFromFile); // read one line in
+            if (txtFromFile != "Staff:" && isitStaff == false) // find the Staff subsection
+                continue;
+            isitStaff = true;
+            stringstream ss(txtFromFile);// create a string stream 
+            while (getline(ss, txtFromFile, '#'))
+                IndidvidualStrings.push_back(txtFromFile);
+        }
+        IndidvidualStrings.erase(IndidvidualStrings.begin()); // get rid of the Staff: title
+    }
+    else
+    {
+        cout << "Error: The option received is neither 1 nor 2! " << endl;
+    }
+    readFromFile.close();// close the file
+    for (size_t i = 0; i < IndidvidualStrings.size(); i += 2) // check every username in the database
+    {
+        if (IndidvidualStrings.at(i) == username) // if the username matches, check the password
+        {
+            if (IndidvidualStrings.at(i + 1) == password) // if the password matches then the username "Exists!"
+                itExists = 0;
+            else
+                itExists = -1; // wrong password has been entered
+            break;// get out of for loop and return result
+        }
+    }
+    if (itExists == 0 && (option == '1'|| option == 1))
+        return 1; // Admin success
+    else if (itExists == 0 && (option == '2'|| option == 2))
+        return 2; // Staff sucess
+    else if (itExists == 1 && (option == '1'|| option == 1))
+        return -1; // Admin failure
+    else if (itExists == 1 && (option == '2'|| option == 2))
+        return -2; // Staff Failure
+    else if (itExists == -1 && (option == '1'|| option == 1))
+        return -3; // Admin wrong password
+    else if (itExists == -1 && (option == '2'|| option == 2))
+        return -4; // Staff wrong password
+    else
+    {
+        cout << "Error: Combination does not exist - code has been broken" << endl;
+        return -100; // wont happen
+    }
+}

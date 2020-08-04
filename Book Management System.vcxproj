@@ -150,7 +150,6 @@
     <ClCompile Include="Admin.cpp" />
     <ClCompile Include="Book Management System.cpp" />
     <ClCompile Include="Book.cpp" />
-    <ClCompile Include="LinkedList.cpp" />
     <ClCompile Include="Staff.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -162,7 +161,6 @@
   <ItemGroup>
     <ClInclude Include="Admin.h" />
     <ClInclude Include="Book.h" />
-    <ClInclude Include="LinkedList.h" />
     <ClInclude Include="Staff.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
