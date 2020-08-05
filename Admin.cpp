@@ -1,14 +1,10 @@
 #include <iostream>
 #include <vector>
-#include <string>
-#include <iomanip>
+#include <conio.h>
 #include <fstream>
 #include <sstream>
-#include <cmath>
-#include <conio.h>
-#include "Book.h"
 #include "Admin.h"
-#include "Staff.h"
+#include "ErrorChecking.h" // checkUsername + int
 /*Function Declarations*/
 using namespace std;
 

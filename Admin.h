@@ -1,24 +1,14 @@
 #pragma once
-#include <iostream>
-#include <vector>
 #include <string>
-#include <iomanip>
-#include<fstream>
-#include <sstream>
-#include <cmath>
-#include <conio.h>
-#include "Book.h"
-using namespace std;
-
 /*Function Declarations*/
 
 void AdminInterface();
 
-int DeleteStaff(string staff);
+int DeleteStaff(std::string staff);
 
-int ResetPassword(string staff, string newPassword);
+int ResetPassword(std::string staff, std::string newPassword);
 
-int AddStaff(string staff, string password);
+int AddStaff(std::string staff, std::string password);
 
 void ShowStaffDetails();
 

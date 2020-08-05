@@ -1,11 +1,5 @@
-
-#include <iostream>
-#include <vector>
-#include <string>
-#include<fstream>
-#include <sstream>
-#include <iomanip>
-#include "Book.h"
+#include <iomanip> // for quoted
+#include "Book.h" // get all other files from .h file
 
 using namespace std;
 /*Default constructor*/
