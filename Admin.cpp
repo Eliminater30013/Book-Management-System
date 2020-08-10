@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <conio.h>
+#include <iomanip>
 #include <fstream>
 #include <sstream>
 #include "Admin.h"
@@ -79,8 +80,8 @@ void AdminInterface()// can add to staff list as well as delete staff
                             cout << "Confirm Password: ";
                             getline(cin, confirmPassword);
                         }
-                        cout << "Before adding the Staff would you like to change the staff name?\nCurrent Username: " << staff << "\n"
-                            << "Press Y for confirmation and N to redo the Process!\nChoice: ";
+                        cout << "Before adding the new staff member, could you please confirm the staff's username?\nCurrent Username: " << staff << "\n"
+                            << "Press Y for confirmation and N to start the process over again.\nChoice: ";
                         thirdOption = _getch();
                         cout << thirdOption << "\n";
                         while ((thirdOption != 'N' && thirdOption != 'n') && (thirdOption != 'Y' && thirdOption != 'y'))
@@ -242,12 +243,13 @@ void ShowStaffDetails()
         {
             string message = (i == 0) ? "Admin Details: \n" : "Staff Details: \n";
             cout << message;
+            cout << left;
             for (size_t j = 0; j < LoginDetails[i].size(); j += 2)
             {
                 if (!i)
-                    cout << "Username: " << LoginDetails[i][j] << "\t\t\tPassword: " << LoginDetails[i][j + 1] << endl;
+                    cout <<  "Username: "<< setw(20) << LoginDetails[i][j] <<  "Password: " << LoginDetails[i][j + 1] << endl;
                 else
-                    cout << "Username: " << LoginDetails[i][j] << "\t\t\t\tPassword: " << LoginDetails[i][j + 1] << endl;
+                    cout << "Username: " << setw(20) << LoginDetails[i][j] << "Password: " << LoginDetails[i][j + 1] << endl;
             }
         }
     }

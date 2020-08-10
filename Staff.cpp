@@ -2,21 +2,51 @@
 #include <vector>
 #include <string>
 #include <conio.h>
+#include <map>
+#include <algorithm>
 #include "Book.h"
 #include "Staff.h"
 #include "ErrorChecking.h"
-
+using namespace std;
 int MAXQUANTITY_SETBY_ADMIN = 100;
+//Dictionary for Categories of Books. 
+map<int, string> CategoriesofBooks{
+    {0, "ACTION"},
+    {1, "ADVENTURE"},
+    {2, "CLASSIC"},
+    {3, "COMIC BOOK"},
+    {4, "GRAPHIC NOVEL"},
+    {5, "MYSTERY"},
+    {6, "FANTASY"},
+    {7, "HISTORICAL FICTION"},
+    {8, "HISTORY"},
+    {9, "HORROR"},
+    {10, "LITERARY FICTION"}, // ADD A DO U MEAN LITERARY FICTION?
+    {11, "ROMANCE"},
+    {12, "SCI-FI"},
+    {13, "SHORT STORIES"},
+    {14, "THRILLER"},
+    {15, "SUSPENSE"},
+    {16, "BIOGRAPHY"},
+    {17, "AUTOBIOGRAPHY"},
+    {18, "COOKBOOK"},
+    {19, "ESSAY"},
+    {20, "POETRY"},
+    {21, "SELF-HELP"},
+    {22, "CRIME"}
+};
 
-
-
+map<int, string> GetCategoriesofBooks()
+{
+    return CategoriesofBooks;
+}
 void StaffInterface()
 {
     char option = ' ';
-    while (option != '7')
+    while (option != '6')
     {
         cout << "What would you like to do?\n1. Add a Book\n2. Display Books\n3. Search Books\n4. Delete a Book\n5. Update Books\n"
-            << "6. Help!\n7. Return to Main Menu\nChoice: ";
+            << "6. Return to Main Menu\nChoice: ";
         option = _getch();
         cout << option << '\n';
         if (option == '1')
@@ -40,10 +70,6 @@ void StaffInterface()
             UpdateBooksInterface();
         }
         else if (option == '6')
-        {
-            // HelpMenu()
-        }
-        else if (option == '7')
         {
             return;
         }
@@ -90,7 +116,18 @@ void SearchBookInterface()
             string category;
             cout << "Enter Category: ";
             getline(cin, category);
-            // Function checks valid categories
+            while (!inDictionary(category, CategoriesofBooks))
+            {
+                cout << "Invalid Category. Type \"_CATEGORIES_\" to get the available Categories.\nOr just enter a category: ";
+                getline(cin, category);
+                if (category == "_CATEGORIES_")
+                {
+                    map<int, string> cat = GetCategoriesofBooks();
+                    PrintMap(cat);
+                    cout << "Enter Category: ";
+                    getline(cin, category);
+                }
+            }
             for (unsigned int i = 0; i < bookVector2D.size(); i++)
             {
                 if (bookVector2D[i].getCategory().find(category) != string::npos)
@@ -110,7 +147,11 @@ void SearchBookInterface()
             string Name;
             cout << "Enter Name: ";
             getline(cin, Name);
-            // do find instead here
+            while (Name.length() < 3)
+            {
+                cout << "Name is too short. Name must be minimum 3 letters long.";
+                getline(cin, Name);
+            }
             for (unsigned int i = 0; i < bookVector2D.size(); i++)
             {
                 if (bookVector2D[i].getName().find(Name) != string::npos)
@@ -130,9 +171,13 @@ void SearchBookInterface()
             string Author;
             cout << "Enter Author's Name: ";
             getline(cin, Author);
+            while (Author.length() < 3)
+            {
+                cout << "Author's name is too short. Name must be minimum 3 letters long.";
+                getline(cin, Author);
+            }
             for (unsigned int i = 0; i < bookVector2D.size(); i++)
             {
-                //cout << bookVector2D[i].getAuthor() << endl;
                 if (bookVector2D[i].getAuthor().find(Author) != string::npos)
                 {
                     position.push_back(i);
@@ -157,7 +202,7 @@ void SearchBookInterface()
         for (vector<int>::iterator i = position.begin(); i < position.end(); i++) // print out the book content of the position vector
         { // use of iterators to allow easy movement along the position vector
             bookVector2D[*i].BTEC_print();
-            cout << endl; // write it out - new line for every book
+            // write it out - new line for every book
         }
     }
 }
@@ -172,60 +217,113 @@ void AddBooksInterface()
         cin.clear();
         cout << "Try again, current ID number available: " << newbook.getNumberOfBooks() << "\nID: ";
     }
-
     cout << "Category: ";
     string category;
     getline(cin, category);
-    //checkcategoryFunction
-
+    while (!inDictionary(category, CategoriesofBooks)) 
+    {
+        cout << "Invalid Category\nCategory: ";
+        getline(cin, category);
+    }
     cout << "Name: ";
     string name;
     getline(cin, name);
-    //checknameFunction
-
+    while (name.length() < 3 && !checkAlpha(name))
+    {
+        cout << "Name is either too short (Name must be minimum 3 letters long)\nOr invalid(Please ensure that the letters in the name is between A-Z)\nName: ";
+        getline(cin, name);
+    }
     cout << "Description: ";
     string description;
     getline(cin, description);
-    //checkdescriptionFunction
-
+    while (description.length() < 20)
+    {
+        cout << "Description is too short. Description must be minimum 20 letters long.\nDescription: ";
+        getline(cin, description);
+    }
     cout << "Publisher: ";
     string publisher;
     getline(cin, publisher);
-    //checkpublisherFunction
-
+    while (publisher.length() < 3)
+    {
+        cout << "Publisher's name is too short. Name must be minimum 3 letters long.\nPublisher: ";
+        getline(cin, publisher);
+    }
     cout << "ReleaseDate: ";
     string releaseDate;
     getline(cin, releaseDate);
-    //checknReleaseDateFunction
-
+    while (true) {
+        try
+        {
+            Correct_format_Date(releaseDate);
+            break;
+        }
+        catch (invalid_argument)
+        {
+            cout << "Please enter the release date in the format dd/mm/yyyy.\nReleaseDate: ";
+            getline(cin, releaseDate);
+        }
+        catch (exception& e)
+        {
+            cout << e.what() << ".\nReleaseDate: ";
+            getline(cin, releaseDate);
+        }
+    }
     cout << "Author: ";
     string author;
     getline(cin, author);
-    //checkAuthorFunction
-
+    while (author.length() < 3)
+    {
+        cout << "The name of the Author is too short. The name must be minimum 3 letters long.\nAuthor: ";
+        getline(cin, author);
+    }
     cout << "Price: ";
     string s_price;
-    getline(cin, s_price);
-    float price = stof(s_price);
-    //checkPriceFunction
+    getline(cin, s_price); float price;
+    while (true) {
+        try {
+            price = stof(s_price);
+            if (price < 0) throw out_of_range("Price of books must be greater than or equal to 0");
+            break;
+        }
+        catch (...)
+        {
+            cout << "Please enter a valid double!\nPrice: ";
+            getline(cin, s_price);
 
+        }
+    }
     cout << "Quantity: ";
     int quantity = 0;
     while (!getline(cin, quantity) || quantity > MAXQUANTITY_SETBY_ADMIN) // Ensure not more than 100 quantity
     {
         cin.clear();
-        cout << "Try again";
+        cout << "Quantity: ";
     }
-    cout << "Rating: ";
+    cout << "Please enter a Rating out of 5: ";
     string s_rating;
     getline(cin, s_rating);
-    float rating = stof(s_rating);
-
+    float rating;
+    while (true) {
+        try {
+            rating = stof(s_rating);
+            if (rating < 0 || rating > 5) throw out_of_range("Out of Range! ");
+            break;
+        }
+        catch (...)
+        {
+            cout << "Please enter a valid numerical rating.\nEnter a Rating out of 5: ";
+            getline(cin, s_rating);
+        }
+    }
     cout << "Review: ";
     string review;
     getline(cin, review);
-    //checkReviewFunction
-
+    while (review.length() < 20)
+    {
+        cout << "Review is too short. A review must be minimum 20 letters long.\nReview: ";
+        getline(cin, review);
+    }
     newbook.SetAll(input_ID, category, name, description, publisher, releaseDate, author, price, quantity, rating, review);
     AppendtoBookFile(newbook);
     cout << "Success!\n";
@@ -435,3 +533,58 @@ void DisplayBooksInterface()
     Printout_BookVector(books);
 }
 
+bool checkAlpha(string& str) {
+    bool alpha = true;
+    for (int i = 0; i < str.size(); i++)
+        if (!isalpha(str[i])) {
+            alpha = false;
+        }
+    return alpha;
+}
+
+bool inDictionary(string& str, map<int, string>& dict) 
+{
+    transform(str.begin(), str.end(), str.begin(), ::toupper); // ensures that it can be matched wih the dictionary
+    bool found = false;
+    for (auto it = CategoriesofBooks.begin(); it != CategoriesofBooks.end(); it++)
+        if (it->second == str)
+            found = true;
+    return found;
+}
+bool Correct_format_Date(string& date) // improve this by ensuring that the days matches the months which matches the year e.g leap year!
+{
+    string parts; int i_parts, i = 0;
+    stringstream ss(date);
+    while (getline(ss, parts, '/')) 
+    {
+        i_parts = stoi(parts);
+        if ((i_parts < 1 || i_parts > 31) && i == 0)
+        {
+            throw out_of_range("Days can only be between 1 and 31");
+        }
+        if ((i_parts < 1 || i_parts > 12) && i == 1)
+        {
+            throw out_of_range("Months can only be between 1 and 12");
+
+        }
+        if ((i_parts < 1800 || i_parts > 2020) && i == 2)
+        {
+            throw out_of_range("Please enter the year correctly e.g 2001 instead of 01");
+
+        }
+        i++;
+    }
+    if (date.length() != 10) throw length_error("Please enter the release date in the format dd/mm/yyyy");
+    return true;
+}
+void PrintMap(map<int, string>& dict, bool withKey)
+{
+    for (auto y : dict)
+    {
+        if (withKey)
+        {
+            cout << y.first << ' ';
+        }
+        cout << y.second << "\n";
+    }
+}

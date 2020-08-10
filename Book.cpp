@@ -79,7 +79,7 @@ ostream& operator<<(ostream &output, const Book &book2) // allows us to write to
 {
 	output << book2.id << "," << book2.category << "," << book2.name << ",\"" << book2.description
 		<< "\"," << book2.publisher << "," << book2.releaseDate << "," << book2.author << ","
-		<< book2.price << "," << book2.quantity << "," << book2.rating << ",\"" << book2.review << "\"";
+		<< fixed << setprecision(2) << book2.price << "," << book2.quantity << "," << book2.rating << ",\"" << book2.review << "\"";
 	return output;
 }
 /*Statics*/
@@ -213,7 +213,7 @@ void Book::setReview(string review)
 /*Methods*/
 void Book::BTEC_print()
 {
-	cout << "Information:\nID: " << id << "\nCategory: "<< category << "\nName: " << name 
+	cout << fixed << setprecision(2) << "Information:\nID: " << id << "\nCategory: "<< category << "\nName: " << name
 	<< "\nDescription: " << description << "\nPublisher: " << publisher << "\nReleaseDate: " 
 	<< releaseDate << "\nAuthor: " << author << "\nPrice: $"<< price 
 	<< "\nQuantity: " << quantity << "\nRating: " << rating << "\nReview: " << review <<"\n"<< endl;

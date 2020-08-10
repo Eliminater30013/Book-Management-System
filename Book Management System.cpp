@@ -13,37 +13,34 @@
 using namespace std;
 
 /*Function Declarations*/
-int StartupMessage();//ENSURE ERROR CHECKING PLS
+int StartupMessage();
 /*Main*/
 int main()
 {
     vector<Book> StoredBooks = LoadBooksQuickly();
     while (!StoredBooks.empty())// Load in the books from storage (txt file) if your cant, then end the program later do a try catch
     {
-        //int result = StartupMessage();
-        //cout << "\nResult: ";
-        //cout << result << "\n";
-            switch (StartupMessage())
-            {
-            case 0:
-                //GuestInterface();
-                cout << "Guest" << endl;
-                break;
-            case 1:
-                AdminInterface();
-                cout << "Admin Success!" << endl;
-                // move on to Admin interface
-                break;
-            case 2:
-                StaffInterface();
-                cout << "Staff Success!" << endl;
-                // Staff interface
-                break;
-            default:
-            {
-                cout << "The code has been broken, and an error log has been created as a text file" << endl;
-                // text file with what was entered in but most likely nothing as this will never happen
-            }
+        switch (StartupMessage())
+        {
+        case 0:
+            //GuestInterface();
+            cout << "Guest" << endl;
+            break;
+        case 1:
+            AdminInterface();
+            cout << "Admin Success!" << endl;
+            // move on to Admin interface
+            break;
+        case 2:
+            StaffInterface();
+            cout << "Staff Success!" << endl;
+            // Staff interface
+            break;
+        default:
+        {
+            cout << "The code has been broken, and an error log has been created as a text file" << endl;
+            // text file with what was entered in but most likely nothing as this will never happen
+        }
         }
     }
 }
@@ -53,7 +50,7 @@ int StartupMessage()
     char option = ' ';
     string adminUsername, adminPassword, staffUsername, staffPassword;
     // check if the user is an Admin, Guest, Staff
-    cout << "Please enter your Administration level by entering the number relating to you positions:\n";
+    cout << "Please enter your Administration level by entering the number relating to your position:\n";
     cout << "1. Admin\n2. Staff\n3. Guest\nChoice: ";
     option = _getch(); // use getch() if this doesn't work ie in Codeblocks
     cout << option;
