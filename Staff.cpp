@@ -201,7 +201,7 @@ void SearchBookInterface()
     if (!position.empty()) {
         for (vector<int>::iterator i = position.begin(); i < position.end(); i++) // print out the book content of the position vector
         { // use of iterators to allow easy movement along the position vector
-            bookVector2D[*i].BTEC_print();
+            bookVector2D[*i].print();
             // write it out - new line for every book
         }
     }
@@ -362,7 +362,7 @@ void DeleteBooksInterface()
     {
         for (vector<int>::iterator i = position.begin(); i < position.end(); i++) // print out the book content of the position vector
         { // use of iterators to allow easy movement along the position vector
-            Books[*i].BTEC_print();
+            Books[*i].print();
             cout << endl; // write it out - new line for every book
         }
     }
@@ -415,116 +415,206 @@ void DeleteBooksInterface()
 }
 void UpdateBooksInterface()
 {
-    cout << "Update a book by:\n1. Rating \n2. Category\n3. Name\n4. Description"
-        << "\n5. Publisher\n6. ReleaseDate, \n7. Author"
-        << "\n8. Price\n9. Review\n0.Return \nChoice: ";
-    char option = _getch();
-    cout << option;
-    while (option != '1' && option != '2' && option != '3' && option != '4' && option != '5' && option != '6' && option != '7' && option != '8' && option != '9' && option != '0')
-    {
-        cout << "\nWrong Option entered Try again: ";
+    char option = ' ';
+    vector<Book> Books;
+    while (option != '0') {
+        cout << "Update a book by:\n1. Rating \n2. Category\n3. Name\n4. Description"
+            << "\n5. Publisher\n6. ReleaseDate \n7. Author"
+            << "\n8. Price\n9. Review\n0. Return \nChoice: ";
         option = _getch();
-        cout << option;
+        cout << option << "\n";
+        while (option != '1' && option != '2' && option != '3' && option != '4' && option != '5' && option != '6' && option != '7' && option != '8' && option != '9' && option != '0')
+        {
+            cout << "\nWrong Option entered Try again: ";
+            option = _getch();
+            cout << option << "\n";
+        }
+        Books = LoadBooksQuickly();
+        int input_ID;
+        char choice = ' ';
+        do 
+        {
+            if (option == '0') break;
+            cout << "Enter ID of Book you would like to update: ";
+            while (!getline(cin, input_ID) || input_ID < 0 || input_ID >= Books[0].getNumberOfBooks()) // Check if greater than ID count! change 8 later
+            {
+                cin.clear();
+                cout << "Invalid ID, Try again\nID: ";
+            }
+            Books[input_ID].print();
+            cout << "Would you like to Update this Book? Press 'Y' for Yes and 'N' for No\nChoice: ";
+            char choice = _getch();
+            cout << choice << "\n";
+            while (choice != 'Y' && choice != 'N' && choice != 'n' && choice != 'y')
+            {
+                cout << "Wrong Key pressed, Try again!\nChoice: ";
+                choice = _getch();
+                cout << choice << "\n";
+            }
+            if (choice == 'Y' || choice == 'y') break;
+        } while (choice != 'n' && choice != 'N');
+        if (option == '1')
+        {
+            cout << "New Rating: ";
+            string s_rating;
+            getline(cin, s_rating);
+            float rating;
+            while (true) {
+                try {
+                    rating = stof(s_rating);
+                    if (rating < 0 || rating > 5) throw out_of_range("Out of Range! ");
+                    break;
+                }
+                catch (...)
+                {
+                    cout << "Please enter a valid numerical rating.\nEnter a Rating out of 5: ";
+                    getline(cin, s_rating);
+                }
+            }
+            auto old = Books[input_ID].getRating();
+            Books[input_ID].setRating(rating);
+            cout << "The book with ID " << input_ID << " has had its rating changed from " << old << " to " << rating << endl;
+        }
+        else if (option == '2')
+        {
+            cout << "New Category: ";
+            string category;
+            getline(cin, category);
+            while (!inDictionary(category, CategoriesofBooks))
+            {
+                cout << "Invalid Category\nCategory: ";
+                getline(cin, category);
+            }
+            auto old = Books[input_ID].getCategory();
+            Books[input_ID].setCategory(category);
+            cout << "The book with ID " << input_ID << " has had its category changed from " << old << " to " << category << endl;
+        }
+        else if (option == '3')
+        {
+            cout << "New Name: ";
+            string name;
+            getline(cin, name);
+            while (name.length() < 3 && !checkAlpha(name))
+            {
+                cout << "Name is either too short (Name must be minimum 3 letters long)\nOr invalid(Please ensure that the letters in the name is between A-Z)\nName: ";
+                getline(cin, name);
+            }
+            auto old = Books[input_ID].getName();
+            Books[input_ID].setName(name);
+            cout << "The book with ID " << input_ID << " has had its name changed from " << old << " to " << name << endl;
+        }
+        else if (option == '4')
+        {
+            cout << " New Description: ";
+            string description;
+            getline(cin, description);
+            while (description.length() < 20)
+            {
+                cout << "Description is too short. Description must be minimum 20 letters long.\nDescription: ";
+                getline(cin, description);
+            }
+            auto old = Books[input_ID].getDescription();
+            Books[input_ID].setDescription(description);
+            cout << "The book with ID " << input_ID << " has had its description changed from " << old << " to " << description << endl;
+        }
+        else if (option == '5')
+        {
+            cout << " New Publisher: ";
+            string publisher;
+            getline(cin, publisher);
+            while (publisher.length() < 3)
+            {
+                cout << "Publisher's name is too short. Name must be minimum 3 letters long.\nPublisher: ";
+                getline(cin, publisher);
+            }
+            auto old = Books[input_ID].getPublisher();
+            Books[input_ID].setPublisher(publisher);
+            cout << "The book with ID " << input_ID << " has had its publisher changed from " << old << " to " << publisher << endl;
+        }
+        else if (option == '6')
+        {
+            cout << "New Release date: ";
+            string releaseDate;
+            getline(cin, releaseDate);
+            while (true) {
+                try
+                {
+                    Correct_format_Date(releaseDate);
+                    break;
+                }
+                catch (invalid_argument)
+                {
+                    cout << "Please enter the release date in the format dd/mm/yyyy.\nReleaseDate: ";
+                    getline(cin, releaseDate);
+                }
+                catch (exception& e)
+                {
+                    cout << e.what() << ".\nReleaseDate: ";
+                    getline(cin, releaseDate);
+                }
+            }
+            auto old = Books[input_ID].getReleaseDate();
+            Books[input_ID].setReleaseDate(releaseDate);
+            cout << "The book with ID " << input_ID << " has had its release date changed from " << old << " to " << releaseDate << endl;
+        }
+        else if (option == '7')
+        {
+            cout << "New Author: ";
+            string author;
+            getline(cin, author);
+            while (author.length() < 3)
+            {
+                cout << "The name of the Author is too short. The name must be minimum 3 letters long.\nAuthor: ";
+                getline(cin, author);
+            }
+            auto old = Books[input_ID].getAuthor();
+            Books[input_ID].setAuthor(author);
+            cout << "The book with ID " << input_ID << " has had its author changed from " << old << " to " << author << endl;
+        }
+        else if (option == '8')
+        {
+            cout << "New Price: ";
+            string s_price;
+            getline(cin, s_price); float price;
+            while (true) {
+                try {
+                    price = stof(s_price);
+                    if (price < 0) throw out_of_range("Price of books must be greater than or equal to 0");
+                    break;
+                }
+                catch (...)
+                {
+                    cout << "Please enter a valid double!\nPrice: ";
+                    getline(cin, s_price);
+
+                }
+            }
+            auto old = Books[input_ID].getPrice();
+            Books[input_ID].setPrice(price);
+            cout << "The book with ID " << input_ID << " has had its price changed from " << old << " to " << price << endl;
+        }
+        else if (option == '9')
+        {
+            cout << "Review: ";
+            string review;
+            getline(cin, review);
+            while (review.length() < 20)
+            {
+                cout << "Review is too short. A review must be minimum 20 letters long.\nReview: ";
+                getline(cin, review);
+            }
+            auto old = Books[input_ID].getReview();
+            Books[input_ID].setReview(review);
+            cout << "The book with ID " << input_ID << " has had its review changed from " << old << " to " << review << endl;
+        }
+        /* This will only happen if we have updated at least one book therefore we will need to rewrite the book file
+        Therefore we break instead of returning!*/
+        else {
+            cout << "Returning..." << endl;
+            return;
+        }
+        RewriteBookFile(Books); // can be optimized by rewriting one book only to the file!
     }
-    vector<Book> Books = LoadBooksQuickly();
-    cout << "Enter ID of Book you would like to update: ";
-    int input_ID;
-    while (!getline(cin, input_ID) || input_ID < 0 || input_ID >= Books[0].getNumberOfBooks()) // Check if greater than ID count! change 8 later
-    {
-        cin.clear();
-        cout << "Invalid ID, Try again\nID: ";
-    }
-    Books[input_ID].BTEC_print();
-    cout << "Would you like to Update this Book? Press 'Y' for Yes and 'N' for No\nChoice: ";
-    char choice = _getch();
-    cout << choice;
-    while (choice != 'Y' && choice != 'N' && choice != 'n' && choice != 'y')
-    {
-        cout << "Wrong Key pressed, Try again!\nChoice: ";
-        choice = _getch();
-        cout << choice;
-    }
-    if (choice == 'n' || choice == 'N')
-        return;
-    if (option == '1')
-    {
-        cout << "Enter new Rating: ";
-        string s_rating;
-        getline(cin, s_rating);
-        float rating = stof(s_rating);
-        Books[input_ID].setRating(rating);
-    }
-    else if (option == '2')
-    {
-        cout << "Category: ";
-        string category;
-        getline(cin, category);
-        //checkcategoryFunction
-        Books[input_ID].setCategory(category);
-    }
-    else if (option == '3')
-    {
-        cout << "Name: ";
-        string name;
-        getline(cin, name);
-        //checknameFunction
-        Books[input_ID].setCategory(name);
-    }
-    else if (option == '4')
-    {
-        cout << "Description: ";
-        string description;
-        getline(cin, description);
-        //checkdescriptionFunction 
-        Books[input_ID].setDescription(description);
-    }
-    else if (option == '5')
-    {
-        cout << "Publisher: ";
-        string publisher;
-        getline(cin, publisher);
-        //checkpublisherFunction
-        Books[input_ID].setPublisher(publisher);
-    }
-    else if (option == '6')
-    {
-        cout << "ReleaseDate: ";
-        string releaseDate;
-        getline(cin, releaseDate);
-        //checknReleaseDateFunction
-        Books[input_ID].setReleaseDate(releaseDate);
-    }
-    else if (option == '7')
-    {
-        cout << "Author: ";
-        string author;
-        getline(cin, author);
-        //checkAuthorFunction
-        Books[input_ID].setAuthor(author);
-    }
-    else if (option == '8')
-    {
-        cout << "Price: ";
-        string s_price;
-        getline(cin, s_price);
-        float price = stof(s_price);
-        //checkPriceFunction
-        Books[input_ID].setPrice(price);
-    }
-    else if (option == '9')
-    {
-        cout << "Review: ";
-        string review;
-        getline(cin, review);
-        Books[input_ID].setReview(review);
-    }
-    else if (option == '0') return;
-    else {
-        cout << "ERROR 420" << endl;
-        return;
-    }
-    ofstream writeToFile("Books.txt", std::ios_base::out);
-    RewriteBookFile(Books);
 }
 void DisplayBooksInterface()
 {

@@ -211,7 +211,7 @@ void Book::setReview(string review)
 	this->review = review;
 }
 /*Methods*/
-void Book::BTEC_print()
+void Book::print()
 {
 	cout << fixed << setprecision(2) << "Information:\nID: " << id << "\nCategory: "<< category << "\nName: " << name
 	<< "\nDescription: " << description << "\nPublisher: " << publisher << "\nReleaseDate: " 
@@ -327,7 +327,7 @@ void Printout_BookVector(vector<Book>& BookVector)
 	for (unsigned int i = 0; i < BookVector.size(); i++)
 	{
 		cout << "Book " << i + 1 << " in Catalogue\n";
-		BookVector[i].BTEC_print();
+		BookVector[i].print();
 	}
 }
 void Print2DVector(vector<vector<string>>& Vector2D)

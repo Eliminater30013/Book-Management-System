@@ -60,7 +60,7 @@ public:
 	void setRating(float rating);
 	void setReview(string review);
 	/*Methods*/
-	void BTEC_print();
+	void print();
 	void SetAll(int id, string category, string name, string description, string publisher, string releaseDate, string author, float price, int quantity, float rating, string review);
 
 };
