@@ -6,3 +6,4 @@ using namespace std;
 int CheckUsername(string username, string password, char option); // ensure that this has error checking to ensure that username > 20;
 istream& getline(istream& ins, int& n);
 
+string getDate_Time();

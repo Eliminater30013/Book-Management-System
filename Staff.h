@@ -1,8 +1,11 @@
 #pragma once
 #include <map>
+#include <string>
+using namespace std;
 /*Function Declarations*/
 map<int, string> GetCategoriesofBooks();
-void StaffInterface();
+vector<int> getNumberOfBooks();
+void StaffInterface(string& user);
 void SearchBookInterface();
 void AddBooksInterface();
 void DeleteBooksInterface();

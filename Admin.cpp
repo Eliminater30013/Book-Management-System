@@ -5,17 +5,45 @@
 #include <fstream>
 #include <sstream>
 #include "Admin.h"
-#include "ErrorChecking.h" // checkUsername + int
-/*Function Declarations*/
+#include "Staff.h"
+#include "ErrorChecking.h" // checkUsername + valid int
 using namespace std;
+/*class Admin*/
+Admin::Admin() // initial budgets
+{
+    maxQuantity = 100;
+    maxBudget = 1000;
+    totalQuantity = 100 * maxQuantity; // can be varied later on
+    totalBudget = 100 * maxBudget;
+}
+
+Admin::Admin(int M_Q, int M_B, int T_B, int T_Q) : maxQuantity(M_Q), maxBudget(M_B), totalBudget(T_B), totalQuantity(T_Q)
+{
+}
+
+Admin::~Admin()
+{
+}
+
+void Admin::setall(int M_Q, int M_B, int T_B, int T_Q)
+{
+    maxQuantity = M_Q;
+    maxBudget = M_B;
+    totalBudget = T_B;
+    totalQuantity = T_Q;
+}
+
+
+/*Function Declarations*/
 
 /*ADMIN INTERFACE WITH 4 FUNCTIONS, DELETESTAFF, RESET PASSWORD, ADD STAFF AND SHOW STAFF DETAILS*/
 /*      ADMIN PART 1 HAS BEEN COMPLETED 04/08/2O                                                                                         */
-void AdminInterface()// can add to staff list as well as delete staff
+void AdminInterface(string user)// can add to staff list as well as delete staff
 {
-    char option = ' ';
+    char option = ' '; 
+    string start = getDate_Time();
     do {
-        cout << "What would you like to do?\n1. Manage Staff Logins\n2. Manage Book Collection\n3. Check Budget & set Quantity\n4. Login Report\n5. Return\nChoice: ";
+        cout << "\nWhat would you like to do?\n1. Manage Staff Logins\n2. Check Budget & set Quantity\n3. Login Report\n4. Return\nChoice: ";
         option = _getch();
         cout << option << '\n';
         if (option == '1')
@@ -107,25 +135,27 @@ void AdminInterface()// can add to staff list as well as delete staff
         //Completed ;}{
         else if (option == '2')
         {
-            //BookOptions
+            CheckBudget_and_Quantity();// plus give option to set budget need total cost from everything // can define quantity
         }
         else if (option == '3')
         {
-            //ShowBudget() plus give option to set budget need total cost from everything // can define quantity
+            ifstream getLoginReport("LoginReport.txt", ios_base::in);
+            cout << getLoginReport.rdbuf();
+            getLoginReport.close();
         }
         else if (option == '4')
         {
-            //LoginReport(int time) ie since yesterday, since a week etc
-        }
-        else if (option == '5')
-        {
-            cout << "Returned!\n"; return;
+            cout << "Returned!\n"; break;
         }
         else
         {
             cout << "Wrong Choice, Please Try Again! \n";
         }
-    } while (option != '5');
+    } while (option != '4');
+    string end = getDate_Time();
+    ofstream LoginReport("LoginReport.txt", ios_base::app);
+    LoginReport << "        Name: " << user << "\nStart time: " << start << "End time:   " << end;
+    LoginReport.close();
 }
 ////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
@@ -258,3 +288,122 @@ void ShowStaffDetails()
 }
 ////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
+
+void CheckBudget_and_Quantity() // later add a method to get the live total of the number of books per category, total number of books, how mush money has already been spent etc.
+{
+    Admin admin;
+    string fileName = "Budget.txt";
+    if (file_exists(fileName))
+    {
+        string bits, line;
+        vector<int> budget;
+        ifstream file(fileName, ios_base::in);
+        getline(file, line);
+        file.close();
+        stringstream ss(line);
+        while (getline(ss, bits, ','))
+        {
+            try {
+                budget.push_back(stoi(bits));
+            }
+            catch (exception& e)
+            {
+                cout << e.what();
+                return;
+            }
+        }
+        admin.setall(budget[2], budget[0], budget[1], budget[3]);
+    }
+    char choice = ' ';
+    vector<int> book_size = getNumberOfBooks();
+    while (choice != 'R' && choice != 'r') {
+        cout << "The current budget is $" << admin.getMaxBudget() << " per genre and the total is $" << admin.getTotalBudget() 
+            << ".\nCurrently, total money spent = $" << book_size.at(2)<< "\nThe maximum number of books per category to aim for is " << admin.getMaxQuantity()
+            << " and the total number of books to aim for is " << admin.getTotalQuantity() << ".\nCurrently, the total number of books is: " << book_size.at(1) << "\nWould you like to update the buget/quantity? Press B to update the budget, Q to update the quantity and R to return\nChoice: ";
+        choice = _getch();
+        cout << choice << endl;
+        while (choice != 'r' && choice != 'R' && choice != 'b' && choice != 'B' && choice != 'q' && choice != 'Q')
+        {
+            cout << "Invalid option. Please try again\nChoice: ";
+            choice = _getch();
+            cout << choice << endl;
+        }
+        if (choice == 'q' || choice == 'Q')
+        {
+            string str1, str2;
+            while (true)
+            {
+                cout << "Enter new Quantity per category: "; // later you can set each quantity seperately per category 
+                getline(cin, str1);
+                try {
+                    int i_str1 = stoi(str1);
+                    if (i_str1 < book_size[0]) throw i_str1;
+                    admin.setMaxQuantity(i_str1);
+                    break;
+                }
+                catch (...) {
+                    cout << "Invalid number entered, please try again.\n";
+                }
+            }
+            while (true)
+            {
+                cout << "Enter total Quantity: ";
+                getline(cin, str2);
+                try {
+                    int i_str2 = stoi(str2);
+                    if (i_str2 < book_size[1]) throw i_str2;
+                    admin.setTotalQuantity(i_str2);
+                    break;
+                }
+                catch (...) {
+                    cout << "Invalid number entered, please try again.\n";
+                }
+            }
+        }
+        else if (choice == 'b' || choice == 'B')
+        {
+            string str1, str2;
+            int i_str1, i_str2;
+            while (true)
+            {
+                cout << "Enter new Budget per category:$"; // later you can set each budget seperately per category
+                getline(cin, str1);
+                try {
+                    i_str1 = stoi(str1);
+                    if (i_str1 < 0) throw i_str1;
+                    admin.setMaxBudget(i_str1);
+                    break;
+                }
+                catch (...) {
+                    cout << "Invalid number entered, please try again.\n";
+                }
+            }
+            while (true)
+            {
+                cout << "Enter total Budget:$";
+                getline(cin, str2);
+                try {
+                    i_str2 = stoi(str2);
+                    if (i_str2 < 0 || i_str1 > i_str2) throw i_str2;
+                    admin.setTotalBudget(i_str2);
+                    break;
+                }
+                catch (...) {
+                    cout << "Invalid number entered, please try again.\n";
+                }
+            }
+        }
+        else
+        {
+            cout << "Returning..." << endl;
+        }
+        ofstream file("Budget.txt", ios_base::out); // max per category then total
+        file << admin.getMaxBudget() << ',' << admin.getTotalBudget() << ',' << admin.getMaxQuantity() << ',' << admin.getTotalQuantity();
+        file.close();
+    }
+}
+
+bool file_exists(string& name) {
+    ifstream f(name.c_str()); // ensures that the argument is in correct format 
+    return f.good();
+}

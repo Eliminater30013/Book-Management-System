@@ -1,6 +1,8 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include <chrono>
 #include "ErrorChecking.h" // get other file dependencies from this .h file
 using namespace std;
 
@@ -101,4 +103,12 @@ int CheckUsername(string username, string password, char option)
         cout << "Error: Combination does not exist - code has been broken" << endl;
         return -100; // wont happen
     }
+}
+
+string getDate_Time()
+{
+    auto elapsed = chrono::system_clock::now();
+    time_t elapsed_time = chrono::system_clock::to_time_t(elapsed);
+    string time = string(ctime(&elapsed_time)); // typecast c string to c++ string as when the date/time is found and everytime the function was called, the address which stored the c string was overwritten
+    return(time);
 }

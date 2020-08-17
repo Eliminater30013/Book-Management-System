@@ -154,6 +154,8 @@
     <ClCompile Include="Staff.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="Budget.txt" />
+    <Text Include="LoginReport.txt" />
     <Text Include="README.txt" />
     <Text Include="Existing Users.txt" />
     <Text Include="Books.txt" />

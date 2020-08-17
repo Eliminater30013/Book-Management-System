@@ -36,6 +36,8 @@
     <Text Include="Existing Users.txt" />
     <Text Include="Books.txt" />
     <Text Include="temp.txt" />
+    <Text Include="Budget.txt" />
+    <Text Include="LoginReport.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Book.h">

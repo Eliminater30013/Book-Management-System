@@ -8,7 +8,6 @@
 #include "Staff.h"
 #include "ErrorChecking.h"
 using namespace std;
-int MAXQUANTITY_SETBY_ADMIN = 100;
 //Dictionary for Categories of Books. 
 map<int, string> CategoriesofBooks{
     {0, "ACTION"},
@@ -40,9 +39,25 @@ map<int, string> GetCategoriesofBooks()
 {
     return CategoriesofBooks;
 }
-void StaffInterface()
+// avr quantity, total quantity, money spent
+vector<int> getNumberOfBooks() // later change this vector to have total per category rather than average number of books.
+{
+    vector <int> vec(3);
+    vec[0] = int(CategoriesofBooks.size());
+    vector<Book> books = LoadBooksQuickly();
+    int output = 0, total = 0;
+    for (int i = 0; i < books.size(); i++) {
+        output += books[i].getQuantity();
+        total += int(round(books[i].getPrice()));
+    }
+    vec[1] = output;
+    vec[2] = total;
+    return vec;
+}
+void StaffInterface(string& user)
 {
     char option = ' ';
+    string start = getDate_Time();
     while (option != '6')
     {
         cout << "What would you like to do?\n1. Add a Book\n2. Display Books\n3. Search Books\n4. Delete a Book\n5. Update Books\n"
@@ -71,13 +86,17 @@ void StaffInterface()
         }
         else if (option == '6')
         {
-            return;
+            break;
         }
         else
         {
             cout << "Invalid Key pressed, Please try again!\n";
         }
     }
+    string end = getDate_Time();
+    ofstream LoginReport("LoginReport.txt", ios_base::app);
+    LoginReport << "        Name: " << user << "\nStart time: " << start << "End time:   " << end;
+    LoginReport.close();
 }
 void SearchBookInterface()
 {
@@ -295,7 +314,7 @@ void AddBooksInterface()
     }
     cout << "Quantity: ";
     int quantity = 0;
-    while (!getline(cin, quantity) || quantity > MAXQUANTITY_SETBY_ADMIN) // Ensure not more than 100 quantity
+    while (!getline(cin, quantity) || quantity > 100) // Ensure not more than 100 quantity
     {
         cin.clear();
         cout << "Quantity: ";
