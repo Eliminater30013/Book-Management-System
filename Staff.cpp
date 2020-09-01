@@ -361,7 +361,7 @@ void DeleteBooksInterface()
     while (!getline(cin, input_ID) || input_ID <= 0 || input_ID >= Books[0].getNumberOfBooks()) // Ensue that ID is in valid range
     {
         cin.clear();
-        cout << "Try again, the ID number must be greater than 0: "and smaller than or equal to " << Books[0].getNumberOfBooks() << ":";
+        cout << "Try again, the ID number must be greater than 0: and smaller than or equal to " << Books[0].getNumberOfBooks() << ":";
     }
     BookFile.open("Books.txt");
     temp.open("temp.txt");
